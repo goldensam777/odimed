@@ -1,0 +1,116 @@
+Nom de la base de données: odimed_platform
+
+Principes d'établissement de la base de données:
+
+- Si vous êtes un médecin:
+    - Vous avez accès à nos services d'écriture automatique des ordonnances, qui nécessitent uniquement de vous un template, une signature et une photo de votre cachet (ou un cachet produit directement via notre service de production de cachets).
+    - Vous avez un profil directement accessible par n'importe quel patient ou pharmacien inscrit sur la plateforme.
+    - Vous avez accès à une base de données de médicaments avec leurs noms officiels, leur molécule, et les diagnostics associés.
+    - Vous pouvez consulter l'historique des ordonnances que vous avez émises.
+
+- Si vous êtes un patient:
+    - Vous avez accès à un profil recensant votre historique d'ordonnances reçues, consultable à tout moment.
+    - Vous pouvez rechercher un médecin par spécialité et consulter son profil (biographie, spécialité, travaux).
+    - Vous pouvez voir quelles pharmacies proches disposent des médicaments qui vous ont été prescrits, et lesquelles sont de garde.
+    - Vous pouvez recevoir une ordonnance sans être inscrit, via un lien court, et consulter le PDF certifié sans compte.
+
+- Si vous êtes un pharmacien:
+    - Vous recevez les ordonnances émises par les médecins pour vos patients, avant même leur arrivée en officine.
+    - Vous pouvez vérifier l'authenticité d'une ordonnance directement depuis la plateforme.
+    - Vous avez accès à l'historique de dispensation lié à un patient (dans les limites autorisées).
+    - Vous pouvez marquer une ordonnance comme préparée puis dispensée, sans nécessairement avoir de compte (accès via lien).
+
+
+entités:
+
+    user(odimed_id, nom, prenom, email, autres_contacts, mot_de_passe_hash, type_utilisateur, date_creation)
+
+    profil_medecin(medecin_id, user_id, numero_ordre, specialite, pays_exercice, bio, est_verifie)
+
+    profil_patient(patient_id, user_id, date_naissance, antecedents)
+        -- user_id nullable: un profil_patient peut être créé "fantôme" (non réclamé)
+        -- lorsqu'une ordonnance est émise pour un patient non inscrit
+
+    officine(officine_id, nom_officine, adresse, latitude, longitude)
+
+    garde_officine(garde_id, officine_id, debut_garde, fin_garde)
+        -- debut_garde / fin_garde: TIMESTAMP pleins (pas date + heure séparées),
+        -- pour éviter les problèmes de passage de minuit
+
+    profil_pharmacien(pharmacien_id, user_id, numero_licence, officine_id, est_verifie)
+
+    asset_medecin(asset_id, medecin_id, type_asset, chemin_fichier, est_par_defaut, date_creation)
+        -- type_asset: 'signature' ou 'cachet'
+
+    ordonnance_templates(template_id, medecin_id, nom_template, chemin_fichier_docx, date_upload)
+        -- les tokens ($nom:img$, $nom$...) sont parsés directement depuis le .docx
+        -- au moment de l'écriture d'une ordonnance, pas stockés en base
+
+    ordonnance(ordonnance_id, medecin_id, patient_id, template_id, date_emission,
+               pdf_name, docx_name, statut, date_signature, lien_token)
+        -- statut: 'brouillon', 'signee', 'preparee', 'dispensee', 'annulee'
+        -- lien_token: identifiant court unique (ex: "X5R9") pour l'accès sans compte
+        --   (patient ou pharmacien), utilisé dans le lien odi.med/{lien_token}
+
+    ordonnance_ligne(ligne_id, ordonnance_id, medicament_id, posologie, duree_traitement)
+
+    molecules(molecule_id, nom_molecule)
+
+    medicaments(medicament_id, nom_officiel, molecule_id, forme, dosage)
+
+    diagnostics(diagnostic_id, description, code_cim10)
+
+    medicament_diagnostic(medicament_id, diagnostic_id)
+        -- table de jonction, relation many-to-many entre médicaments et diagnostics
+
+
+notes / points ouverts:
+
+    - numero_ordre: remplace le RPPS (identifiant français) par un identifiant générique,
+      adapté au format de l'Ordre National des Médecins du Bénin ou équivalent selon le pays d'exercice.
+
+    - officine séparée de profil_pharmacien: une officine peut avoir plusieurs pharmaciens
+      rattachés, et permet de gérer géolocalisation/garde/stock indépendamment d'un pharmacien précis.
+
+    - garde_officine: table à part plutôt qu'une colonne "statut" dans officine, pour ne pas
+      avoir à réécrire toute la table officine chaque jour. debut_garde/fin_garde en TIMESTAMP
+      pleins pour éviter le bug de passage de minuit (date + heure séparées cassait ce cas).
+
+    - asset_medecin: permet à la base de connaître et interroger les signatures/cachets déjà
+      uploadés (les plus récents, celui par défaut) sans avoir à lister le stockage physique
+      à chaque fois. Le fichier lui-même reste stocké hors base (disque/S3), asset_medecin
+      ne garde que la référence + les métadonnées utiles (type, défaut, date).
+
+    - template_tokens retiré: le type de chaque token (texte/img) est déjà encodé dans son nom
+      via la convention $nomtoken:img$, donc le stocker en base dupliquerait une info déjà
+      présente dans le fichier .docx source, avec risque de désynchronisation. Les tokens sont
+      extraits par parsing du .docx à la volée au moment de la génération de l'ordonnance.
+
+    - pdf_name / docx_name (plutôt qu'un chemin complet): possible parce que la convention de
+      stockage est fixe et déterministe (medecins/{medecin_id}/ordonnances/{ordonnance_id}/...),
+      donc le chemin complet est reconstructible à partir de medecin_id + ordonnance_id déjà
+      présents sur la ligne. À reconsidérer en chemin complet si la structure de stockage
+      devient un jour moins prévisible (migration, changement de provider, etc.).
+
+    - ordonnance.statut / date_signature: cycle de vie de l'ordonnance, nécessaire pour que le
+      pharmacien puisse distinguer une ordonnance valide d'une annulée, et suivre sa préparation.
+
+    - ordonnance.lien_token: support du parcours "lien court partageable par WhatsApp, sans
+      compte requis" pour le patient et le pharmacien (validé par l'exemple PharMap).
+
+    - profil_patient.user_id nullable: permet de créer un profil patient "fantôme" au moment
+      où le médecin saisit un patient non inscrit. Le patient peut plus tard "réclamer" ce
+      profil en s'inscrivant (rapprochement par email/téléphone), sans perdre l'historique.
+
+    - medicament_diagnostic: un médicament peut traiter plusieurs diagnostics, et un diagnostic
+      peut être traité par plusieurs médicaments -> relation many-to-many, pas de FK directe.
+
+    - officine(latitude, longitude): nécessaire pour calculer la proximité réelle, une adresse
+      texte seule ne permettant pas de trier/filtrer par distance. Géocodage possible une seule
+      fois à la création de l'officine (API Google Maps ou Nominatim/OpenStreetMap).
+
+    - profil_medecin.bio: ajouté pour supporter l'écran "profil médecin consultable" du flow
+      patient (biographie/travaux), qui était mentionné dans le pitch mais absent du schéma.
+
+    - à définir plus tard: gestion des stocks par officine (pour la fonctionnalité
+      "voir quelle pharmacie proche a le médicament en stock").
