@@ -1,0 +1,97 @@
+═══════════════════════════════════════════════════════════════════════
+  PARCOURS MÉDECIN
+═══════════════════════════════════════════════════════════════════════
+
+  [Connexion]
+      |
+      v
+  [Dashboard médecin]
+      |
+      |---------------------------------------------.
+      v                                              v
+  [Nouvelle ordonnance]                    [Gestion templates/assets]
+      |                                              |
+      v                                    .---------+---------.
+  [Sélection template]                     v                   v
+      |                              [Upload .docx]    [Upload signature/cachet]
+      v                              (parsing tokens)         |
+  [Formulaire dynamique]                                       v
+   (champs générés depuis                             [Suppression fond auto]
+    les tokens du template)                                    |
+      |                                                         v
+      |<--- si $signature:img$/$cachet:img$ -------- [Stocké dans asset_medecin]
+      |     -> proposer "récents" + "nouveau"
+      v
+  [Sélection patient]
+   - patient existant (recherche)
+   - ou saisie manuelle (pas encore inscrit)
+      |
+      v
+  [Prévisualisation ordonnance]
+      |
+      v
+  [Génération PDF + DOCX]
+   (statut: 'brouillon' -> 'signee')
+      |
+      v
+  [Écran de partage]
+      |
+      |----------------.------------------.
+      v                v                  v
+  [Télécharger]   [Lien court]      [Envoi direct
+                  odi.med/X5R9       si patient inscrit]
+                       |
+                       v
+                  [Copier / Envoyer via WhatsApp]
+
+
+═══════════════════════════════════════════════════════════════════════
+  PARCOURS PATIENT
+═══════════════════════════════════════════════════════════════════════
+
+  Entrée A: via lien reçu (WhatsApp/SMS)     Entrée B: via compte odimed
+      |                                              |
+      v                                              v
+  [odi.med/X5R9]                            [Connexion / Inscription]
+   (pas de compte requis)                            |
+      |                                               v
+      v                                     [Dashboard patient]
+  [Voir ordonnance PDF certifiée]                     |
+      |                                     .---------+---------.
+      v                                     v                   v
+  [Bouton: "Trouver une pharmacie          [Historique          [Rechercher un
+   avec ces médicaments"]                   ordonnances]         médecin]
+      |                                                                |
+      v                                                                v
+  [Recherche officines proches]                                [Résultats par
+   - filtre: [ ] garde uniquement                               spécialité]
+   - tri par distance (lat/lng)                                       |
+      |                                                                v
+      v                                                        [Profil médecin]
+  [Liste officines + statut garde]                              (bio, spécialité,
+      |                                                           historique)
+      v
+  [Contact officine: appel / WhatsApp]
+
+
+═══════════════════════════════════════════════════════════════════════
+  PARCOURS PHARMACIEN
+═══════════════════════════════════════════════════════════════════════
+
+  Entrée A: lien reçu du patient          Entrée B: compte pharmacien
+      |                                            |
+      v                                            v
+  [odi.med/X5R9]                          [Connexion]
+   (vue simplifiée mobile,                          |
+    pas de compte requis)                           v
+      |                                    [Dashboard pharmacien]
+      v                                             |
+  [Voir ordonnance certifiée]              .--------+--------.
+      |                                    v                 v
+      v                              [Ordonnances        [Gestion officine]
+  [Marquer: en préparation]           reçues / à            (adresse, gardes,
+      |                               préparer]              stock -> plus tard)
+      v
+  [Dispensation validée]
+   (traçabilité: qui, quand — statut 'preparee'/'dispensee' plutôt qu'une
+    entité "bon de commande" séparée, comme tranché plus tôt)
