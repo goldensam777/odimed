@@ -114,15 +114,12 @@ def upload_asset(
             detail="Vous devez créer un profil médecin avant d'uploader une signature ou un cachet.",
         )
 
-    os.makedirs(UPLOAD_DIR_ASSETS, exist_ok=True)
-
-    # Extension du fichier
     file_ext = os.path.splitext(file.filename or "")[1] or ".png"
-    filename = f"{profil.id}_{type_asset.value}_{uuid.uuid4().hex[:8]}{file_ext}"
-    file_path = os.path.join(UPLOAD_DIR_ASSETS, filename)
+    filename = f"{uuid.uuid4().hex[:8]}{file_ext}"
+    relative_path = f"medecins/{profil.id}/assets/{type_asset.value}/{filename}"
 
-    with open(file_path, "wb") as f:
-        f.write(file.file.read())
+    from app.core import storage
+    saved_path = storage.save_file(relative_path, file.file.read())
 
     # Si c'est l'asset par défaut, décocher les précédents de même type
     if est_par_defaut:
@@ -139,13 +136,14 @@ def upload_asset(
     asset = AssetMedecin(
         medecin_id=profil.id,
         type_asset=type_asset,
-        chemin_fichier=file_path,
+        chemin_fichier=saved_path,
         est_par_defaut=est_par_defaut,
     )
     session.add(asset)
     session.commit()
     session.refresh(asset)
     return asset
+
 
 
 @router.get("/me/assets", response_model=list[AssetMedecinPublic])

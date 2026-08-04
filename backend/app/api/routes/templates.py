@@ -14,9 +14,9 @@ from app.models import (
     ProfilMedecin,
 )
 
-router = APIRouter(prefix="/templates", tags=["templates"])
+from app.core import storage
 
-UPLOAD_DIR_TEMPLATES = "uploads/templates"
+router = APIRouter(prefix="/templates", tags=["templates"])
 
 
 def extract_docx_tokens(file_path: str) -> list[str]:
@@ -79,19 +79,20 @@ def upload_template(
             status_code=400, detail="Seuls les fichiers Microsoft Word (.docx) sont acceptés."
         )
 
-    os.makedirs(UPLOAD_DIR_TEMPLATES, exist_ok=True)
-    filename = f"{profil.id}_{uuid.uuid4().hex[:8]}.docx"
-    file_path = os.path.join(UPLOAD_DIR_TEMPLATES, filename)
+    filename = f"{uuid.uuid4().hex[:8]}.docx"
+    relative_path = f"medecins/{profil.id}/templates/{filename}"
 
-    with open(file_path, "wb") as f:
-        f.write(file.file.read())
+    file_bytes = file.file.read()
+    saved_path = storage.save_file(relative_path, file_bytes)
 
-    tokens = extract_docx_tokens(file_path)
+    # Récupérer le chemin local pour le parsing des tokens par python-docx
+    local_abs_path = storage.get_file_path(saved_path)
+    tokens = extract_docx_tokens(local_abs_path)
 
     template_obj = OrdonnanceTemplate(
         medecin_id=profil.id,
         nom_template=nom_template,
-        chemin_fichier_docx=file_path,
+        chemin_fichier_docx=saved_path,
     )
     session.add(template_obj)
     session.commit()
@@ -117,12 +118,9 @@ def delete_template(session: SessionDep, current_user: CurrentUser, id: uuid.UUI
     if not template_obj or template_obj.medecin_id != profil.id:
         raise HTTPException(status_code=404, detail="Modèle introuvable.")
 
-    if os.path.exists(template_obj.chemin_fichier_docx):
-        try:
-            os.remove(template_obj.chemin_fichier_docx)
-        except OSError:
-            pass
+    storage.delete_file(template_obj.chemin_fichier_docx)
 
     session.delete(template_obj)
     session.commit()
     return {"message": "Modèle supprimé avec succès."}
+
