@@ -86,10 +86,10 @@ class User(UserBase, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
-    profil_medecin: "ProfilMedecin" = Relationship(back_populates="user", cascade_delete=True)
-    profil_patient: "ProfilPatient" = Relationship(back_populates="user", cascade_delete=True)
-    profil_pharmacien: "ProfilPharmacien" = Relationship(back_populates="user", cascade_delete=True)
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+    profil_medecin: ProfilMedecin = Relationship(back_populates="user", cascade_delete=True)
+    profil_patient: ProfilPatient = Relationship(back_populates="user", cascade_delete=True)
+    profil_pharmacien: ProfilPharmacien = Relationship(back_populates="user", cascade_delete=True)
 
 
 # Properties to return via API, id is always required
@@ -171,9 +171,9 @@ class ProfilMedecin(ProfilMedecinBase, table=True):
     user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, unique=True, ondelete="CASCADE")
 
     user: User | None = Relationship(back_populates="profil_medecin")
-    assets: list["AssetMedecin"] = Relationship(back_populates="medecin", cascade_delete=True)
-    templates: list["OrdonnanceTemplate"] = Relationship(back_populates="medecin", cascade_delete=True)
-    ordonnances: list["Ordonnance"] = Relationship(back_populates="medecin")
+    assets: list[AssetMedecin] = Relationship(back_populates="medecin", cascade_delete=True)
+    templates: list[OrdonnanceTemplate] = Relationship(back_populates="medecin", cascade_delete=True)
+    ordonnances: list[Ordonnance] = Relationship(back_populates="medecin")
 
 
 class ProfilMedecinPublic(ProfilMedecinBase):
@@ -207,7 +207,7 @@ class ProfilPatient(ProfilPatientBase, table=True):
     )
 
     user: User | None = Relationship(back_populates="profil_patient")
-    ordonnances: list["Ordonnance"] = Relationship(back_populates="patient")
+    ordonnances: list[Ordonnance] = Relationship(back_populates="patient")
 
 
 class ProfilPatientPublic(ProfilPatientBase):
@@ -240,8 +240,8 @@ class OfficineUpdate(SQLModel):
 class Officine(OfficineBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
-    pharmaciens: list["ProfilPharmacien"] = Relationship(back_populates="officine")
-    gardes: list["GardeOfficine"] = Relationship(back_populates="officine", cascade_delete=True)
+    pharmaciens: list[ProfilPharmacien] = Relationship(back_populates="officine")
+    gardes: list[GardeOfficine] = Relationship(back_populates="officine", cascade_delete=True)
 
 
 class OfficinePublic(OfficineBase):
@@ -355,7 +355,7 @@ class OrdonnanceTemplate(OrdonnanceTemplateBase, table=True):
     )
 
     medecin: ProfilMedecin | None = Relationship(back_populates="templates")
-    ordonnances: list["Ordonnance"] = Relationship(back_populates="template")
+    ordonnances: list[Ordonnance] = Relationship(back_populates="template")
 
 
 class OrdonnanceTemplatePublic(OrdonnanceTemplateBase):
@@ -400,7 +400,7 @@ class Ordonnance(OrdonnanceBase, table=True):
     medecin: ProfilMedecin | None = Relationship(back_populates="ordonnances")
     patient: ProfilPatient | None = Relationship(back_populates="ordonnances")
     template: OrdonnanceTemplate | None = Relationship(back_populates="ordonnances")
-    lignes: list["OrdonnanceLigne"] = Relationship(back_populates="ordonnance", cascade_delete=True)
+    lignes: list[OrdonnanceLigne] = Relationship(back_populates="ordonnance", cascade_delete=True)
 
 
 class OrdonnancePublic(OrdonnanceBase):
@@ -413,6 +413,12 @@ class OrdonnancePublic(OrdonnanceBase):
     lien_token: str
 
 
+class OrdonnancesPublic(SQLModel):
+    data: list[OrdonnancePublic]
+    count: int
+
+
+
 # ============================================================
 # Référentiel médicaments / diagnostics
 # ============================================================
@@ -423,7 +429,7 @@ class MoleculeBase(SQLModel):
 
 class Molecule(MoleculeBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    medicaments: list["Medicament"] = Relationship(back_populates="molecule")
+    medicaments: list[Medicament] = Relationship(back_populates="molecule")
 
 
 class MoleculePublic(MoleculeBase):
@@ -453,10 +459,10 @@ class Medicament(MedicamentBase, table=True):
     molecule_id: uuid.UUID | None = Field(default=None, foreign_key="molecule.id")
 
     molecule: Molecule | None = Relationship(back_populates="medicaments")
-    diagnostics: list["Diagnostic"] = Relationship(
+    diagnostics: list[Diagnostic] = Relationship(
         back_populates="medicaments", link_model=MedicamentDiagnostic
     )
-    lignes_ordonnance: list["OrdonnanceLigne"] = Relationship(back_populates="medicament")
+    lignes_ordonnance: list[OrdonnanceLigne] = Relationship(back_populates="medicament")
 
 
 class MedicamentPublic(MedicamentBase):
@@ -471,7 +477,7 @@ class DiagnosticBase(SQLModel):
 
 class Diagnostic(DiagnosticBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    medicaments: list["Medicament"] = Relationship(
+    medicaments: list[Medicament] = Relationship(
         back_populates="diagnostics", link_model=MedicamentDiagnostic
     )
 
