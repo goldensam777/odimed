@@ -146,3 +146,26 @@ def upload_asset(
     session.commit()
     session.refresh(asset)
     return asset
+
+
+@router.get("/me/assets", response_model=list[AssetMedecinPublic])
+def list_my_assets(
+    session: SessionDep,
+    current_user: CurrentUser,
+    type_asset: TypeAsset | None = None,
+) -> Any:
+    """
+    Lister les signatures et cachets récents uploadés par le médecin connecté.
+    """
+    statement = select(ProfilMedecin).where(ProfilMedecin.user_id == current_user.id)
+    profil = session.exec(statement).first()
+    if not profil:
+        return []
+
+    statement_asset = select(AssetMedecin).where(AssetMedecin.medecin_id == profil.id)
+    if type_asset:
+        statement_asset = statement_asset.where(AssetMedecin.type_asset == type_asset)
+    statement_asset = statement_asset.order_by(AssetMedecin.created_at.desc())
+    assets = session.exec(statement_asset).all()
+    return assets
+

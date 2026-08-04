@@ -93,16 +93,14 @@ def create_ordonnance(
     """
     statement_medecin = select(ProfilMedecin).where(ProfilMedecin.user_id == current_user.id)
     profil_medecin = session.exec(statement_medecin).first()
-    if not profil_medecin and not current_user.is_superuser:
+    if not profil_medecin:
         raise HTTPException(
             status_code=400,
-            detail="Seul un médecin ayant un profil actif peut créer une ordonnance.",
+            detail="Un profil médecin actif est obligatoire pour émettre une ordonnance.",
         )
 
-    medecin_id = profil_medecin.id if profil_medecin else current_user.id
-
     ordonnance = Ordonnance(
-        medecin_id=medecin_id,
+        medecin_id=profil_medecin.id,
         patient_id=ordonnance_in.patient_id,
         template_id=ordonnance_in.template_id,
         lien_token=generate_lien_token(),
@@ -111,3 +109,4 @@ def create_ordonnance(
     session.commit()
     session.refresh(ordonnance)
     return ordonnance
+

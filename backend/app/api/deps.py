@@ -55,3 +55,21 @@ def get_current_active_superuser(current_user: CurrentUser) -> User:
             status_code=403, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+def get_current_medecin(session: SessionDep, current_user: CurrentUser) -> "ProfilMedecin":
+    from sqlmodel import select
+    from app.models import ProfilMedecin
+
+    statement = select(ProfilMedecin).where(ProfilMedecin.user_id == current_user.id)
+    profil = session.exec(statement).first()
+    if not profil:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux médecins. Un profil médecin actif est requis.",
+        )
+    return profil
+
+
+CurrentMedecinDep = Annotated["ProfilMedecin", Depends(get_current_medecin)]
+
