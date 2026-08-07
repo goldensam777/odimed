@@ -23,17 +23,24 @@ import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 const formSchema = z
   .object({
     email: z.email(),
-    full_name: z.string().min(1, { message: "Full Name is required" }),
+    full_name: z.string().min(1, { message: "Le nom complet est requis" }),
     password: z
       .string()
-      .min(1, { message: "Password is required" })
-      .min(8, { message: "Password must be at least 8 characters" }),
+      .min(1, { message: "Le mot de passe est requis" })
+      .min(8, { message: "Le mot de passe doit faire au moins 8 caractères" }),
     confirm_password: z
       .string()
-      .min(1, { message: "Password confirmation is required" }),
+      .min(1, { message: "La confirmation est requise" }),
+    type_utilisateur: z.enum(["medecin", "patient", "pharmacien"], {
+      required_error: "Veuillez sélectionner un type de profil",
+    }),
+    numero_ordre: z.string().optional(),
+    specialite: z.string().optional(),
+    pays_exercice: z.string().optional(),
+    numero_licence: z.string().optional(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "The passwords don't match",
+    message: "Les mots de passe ne correspondent pas",
     path: ["confirm_password"],
   })
 
@@ -51,7 +58,7 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       {
-        title: "Sign Up - FastAPI Template",
+        title: "Sign Up - Odimed",
       },
     ],
   }),
@@ -68,15 +75,23 @@ function SignUp() {
       full_name: "",
       password: "",
       confirm_password: "",
+      type_utilisateur: "medecin",
+      numero_ordre: "",
+      specialite: "",
+      pays_exercice: "",
+      numero_licence: "",
     },
   })
+
+  const selectedRole = form.watch("type_utilisateur")
 
   const onSubmit = (data: FormData) => {
     if (signUpMutation.isPending) return
 
     // exclude confirm_password from submission data
     const { confirm_password: _confirm_password, ...submitData } = data
-    signUpMutation.mutate(submitData)
+    // cast to any to bypass strict typing before openapi-ts sync
+    signUpMutation.mutate(submitData as any)
   }
 
   return (
@@ -87,20 +102,59 @@ function SignUp() {
           className="flex flex-col gap-6"
         >
           <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl font-bold">Create an account</h1>
+            <h1 className="text-2xl font-bold">Créer un compte</h1>
           </div>
 
           <div className="grid gap-4">
+            
+            <FormField
+              control={form.control}
+              name="type_utilisateur"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Je suis un...</FormLabel>
+                  <FormControl>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: "medecin", label: "Médecin" },
+                        { id: "patient", label: "Patient" },
+                        { id: "pharmacien", label: "Pharmacien" },
+                      ].map((role) => (
+                        <label
+                          key={role.id}
+                          className={`flex cursor-pointer items-center justify-center rounded-md border-2 p-3 text-sm font-medium transition-colors hover:bg-muted ${
+                            field.value === role.id
+                              ? "border-primary text-primary"
+                              : "border-muted text-muted-foreground"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            className="sr-only"
+                            {...field}
+                            value={role.id}
+                            checked={field.value === role.id}
+                          />
+                          {role.label}
+                        </label>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Nom Complet</FormLabel>
                   <FormControl>
                     <Input
                       data-testid="full-name-input"
-                      placeholder="User"
+                      placeholder="Dr. Jean Dupont"
                       type="text"
                       {...field}
                     />
@@ -119,7 +173,7 @@ function SignUp() {
                   <FormControl>
                     <Input
                       data-testid="email-input"
-                      placeholder="user@example.com"
+                      placeholder="jean.dupont@example.com"
                       type="email"
                       {...field}
                     />
@@ -128,17 +182,81 @@ function SignUp() {
                 </FormItem>
               )}
             />
+            
+            {/* Conditional Fields for Médecin */}
+            {selectedRole === "medecin" && (
+              <div className="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-border">
+                <FormField
+                  control={form.control}
+                  name="numero_ordre"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Numéro d'Ordre</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: 12345678" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="specialite"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Spécialité</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Cardiologie" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="pays_exercice"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Pays d'Exercice</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: France" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+            
+            {/* Conditional Fields for Pharmacien */}
+            {selectedRole === "pharmacien" && (
+              <div className="bg-muted/30 p-4 rounded-xl border border-border">
+                <FormField
+                  control={form.control}
+                  name="numero_licence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Numéro de Licence</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: PHARM-98765" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
 
             <FormField
               control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Mot de passe</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="password-input"
-                      placeholder="Password"
+                      placeholder="Mot de passe"
                       {...field}
                     />
                   </FormControl>
@@ -152,11 +270,11 @@ function SignUp() {
               name="confirm_password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Confirmer le mot de passe</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="confirm-password-input"
-                      placeholder="Confirm Password"
+                      placeholder="Confirmer"
                       {...field}
                     />
                   </FormControl>
@@ -170,14 +288,14 @@ function SignUp() {
               className="w-full"
               loading={signUpMutation.isPending}
             >
-              Sign Up
+              S'inscrire
             </LoadingButton>
           </div>
 
           <div className="text-center text-sm">
-            Already have an account?{" "}
+            Déjà un compte ?{" "}
             <RouterLink to="/login" className="underline underline-offset-4">
-              Log in
+              Se connecter
             </RouterLink>
           </div>
         </form>

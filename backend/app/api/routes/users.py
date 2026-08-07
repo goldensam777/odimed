@@ -148,6 +148,7 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
     """
     Create new user without the need to be logged in.
     """
+    from app.models import ProfilMedecin, ProfilPharmacien, ProfilPatient, TypeUtilisateur
     user = crud.get_user_by_email(session=session, email=user_in.email)
     if user:
         raise HTTPException(
@@ -156,6 +157,28 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
         )
     user_create = UserCreate.model_validate(user_in)
     user = crud.create_user(session=session, user_create=user_create)
+    
+    if user_in.type_utilisateur == TypeUtilisateur.medecin:
+        profil_medecin = ProfilMedecin(
+            user_id=user.id,
+            numero_ordre=user_in.numero_ordre or "A_DEFINIR",
+            specialite=user_in.specialite or "Non spécifiée",
+            pays_exercice=user_in.pays_exercice or "Non spécifié"
+        )
+        session.add(profil_medecin)
+    elif user_in.type_utilisateur == TypeUtilisateur.pharmacien:
+        profil_pharmacien = ProfilPharmacien(
+            user_id=user.id,
+            numero_licence=user_in.numero_licence or "A_DEFINIR"
+        )
+        session.add(profil_pharmacien)
+    elif user_in.type_utilisateur == TypeUtilisateur.patient:
+        profil_patient = ProfilPatient(
+            user_id=user.id
+        )
+        session.add(profil_patient)
+        
+    session.commit()
     return user
 
 

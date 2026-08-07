@@ -19,6 +19,7 @@ Chaque médecin importe son propre template Word d'ordonnance, dans lequel il pl
 ## Avantages par acteur
 
 ### Médecins
+
 - Gain de temps réel sur la rédaction — plus besoin de retaper une ordonnance similaire à chaque fois
 - Historique et traçabilité complets des ordonnances émises par patient
 - Rendu visuel professionnel et cohérent à chaque prescription
@@ -26,18 +27,21 @@ Chaque médecin importe son propre template Word d'ordonnance, dans lequel il pl
 - Un profil vérifié avec historique de prescriptions et publications peut servir de CV vivant pour des cliniques, ONG ou programmes de recrutement médical
 
 ### Patients
+
 - Lisibilité garantie, fin des erreurs liées à une écriture illisible
 - Accès à leur propre historique de prescriptions (second avis, changement de médecin, renouvellement)
 - Orientation facilitée vers le bon type de consultation grâce à un futur assistant IA de pré-qualification
 - Visibilité sur les pharmacies proches ayant les médicaments prescrits en stock
 
 ### Pharmaciens / pharmacies
+
 - Réception anticipée de l'ordonnance numérique, préparation en amont de l'arrivée du patient
 - Vérification automatique de l'authenticité (contre la falsification), l'ordonnance provenant d'un compte médecin vérifié
 - Historique de dispensation lié au patient, utile pour repérer interactions médicamenteuses ou sur-prescriptions
 - Meilleure gestion des stocks grâce à la visibilité sur la demande à venir
 
 ### Écosystème de santé
+
 - Standardisation du format d'ordonnance à l'échelle d'un pays, voire au-delà
 - Réduction de la fraude et de la falsification de documents médicaux
 - Données agrégées et anonymisées exploitables comme signal de santé publique (médicaments les plus prescrits, par région, par diagnostic)
@@ -46,6 +50,7 @@ Chaque médecin importe son propre template Word d'ordonnance, dans lequel il pl
 ## Fonctionnalités prévues (roadmap)
 
 **MVP**
+
 - Upload de template Word personnalisé + détection automatique des tokens
 - Génération d'ordonnance (Word + PDF) à partir des données saisies
 - Upload de signature/cachet avec suppression automatique de l'arrière-plan
@@ -53,6 +58,7 @@ Chaque médecin importe son propre template Word d'ordonnance, dans lequel il pl
 - Comptes médecins gérés par email
 
 **Post-MVP**
+
 - Créateur de cachets intégré (éditeur canvas)
 - Base de données médicaments/molécules/diagnostics (autocomplétion à la saisie)
 - Enregistrement audio de consultation avec récapitulatif généré par IA

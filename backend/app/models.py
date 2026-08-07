@@ -57,6 +57,14 @@ class UserRegister(SQLModel):
     password: str = Field(min_length=8, max_length=128)
     full_name: str | None = Field(default=None, max_length=255)
     type_utilisateur: TypeUtilisateur | None = Field(default=None)
+    
+    # Profil Medecin fields
+    numero_ordre: str | None = Field(default=None, max_length=64)
+    specialite: str | None = Field(default=None, max_length=255)
+    pays_exercice: str | None = Field(default=None, max_length=100)
+    
+    # Profil Pharmacien fields
+    numero_licence: str | None = Field(default=None, max_length=64)
 
 
 # Properties to receive via API on update, all are optional

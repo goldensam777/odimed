@@ -1,11 +1,7 @@
 import { Link } from "@tanstack/react-router"
+import { HeartPulse } from "lucide-react"
 
-import { useTheme } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
-import icon from "/assets/images/fastapi-icon.svg"
-import iconLight from "/assets/images/fastapi-icon-light.svg"
-import logo from "/assets/images/fastapi-logo.svg"
-import logoLight from "/assets/images/fastapi-logo-light.svg"
 
 interface LogoProps {
   variant?: "full" | "icon" | "responsive"
@@ -18,38 +14,34 @@ export function Logo({
   className,
   asLink = true,
 }: LogoProps) {
-  const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === "dark"
-
-  const fullLogo = isDark ? logoLight : logo
-  const iconLogo = isDark ? iconLight : icon
-
   const content =
     variant === "responsive" ? (
       <>
-        <img
-          src={fullLogo}
-          alt="FastAPI"
-          className={cn(
-            "h-6 w-auto group-data-[collapsible=icon]:hidden",
-            className,
-          )}
-        />
-        <img
-          src={iconLogo}
-          alt="FastAPI"
-          className={cn(
-            "size-5 hidden group-data-[collapsible=icon]:block",
-            className,
-          )}
-        />
+        <div className={cn("flex items-center gap-2 group-data-[collapsible=icon]:hidden", className)}>
+          <div className="relative flex items-center justify-center bg-primary/10 p-1.5 rounded-lg">
+            <HeartPulse className="h-6 w-6 text-primary animate-[pulse_2s_ease-in-out_infinite]" />
+            <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md -z-10 animate-pulse"></div>
+          </div>
+          <span className="font-extrabold text-2xl tracking-tighter bg-gradient-to-br from-primary to-emerald-500 bg-clip-text text-transparent">
+            Odimed
+          </span>
+        </div>
+        <div className={cn("hidden group-data-[collapsible=icon]:flex items-center justify-center bg-primary/10 p-1.5 rounded-lg", className)}>
+           <HeartPulse className="h-5 w-5 text-primary animate-[pulse_2s_ease-in-out_infinite]" />
+        </div>
       </>
     ) : (
-      <img
-        src={variant === "full" ? fullLogo : iconLogo}
-        alt="FastAPI"
-        className={cn(variant === "full" ? "h-6 w-auto" : "size-5", className)}
-      />
+      <div className={cn("flex items-center gap-2", className)}>
+        <div className="relative flex items-center justify-center bg-primary/10 p-1.5 rounded-lg">
+          <HeartPulse className={cn(variant === "full" ? "h-6 w-6" : "h-5 w-5", "text-primary animate-[pulse_2s_ease-in-out_infinite]")} />
+          <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md -z-10 animate-pulse"></div>
+        </div>
+        {variant === "full" && (
+          <span className="font-extrabold text-2xl tracking-tighter bg-gradient-to-br from-primary to-emerald-500 bg-clip-text text-transparent">
+            Odimed
+          </span>
+        )}
+      </div>
     )
 
   if (!asLink) {
