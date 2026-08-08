@@ -3,118 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
-
-export class ItemsService {
-    /**
-     * Read Items
-     * Retrieve items.
-     * @param data The data for the request.
-     * @param data.skip
-     * @param data.limit
-     * @returns ItemsPublic Successful Response
-     * @throws ApiError
-     */
-    public static readItems(data: ItemsReadItemsData = {}): CancelablePromise<ItemsReadItemsResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/items/',
-            query: {
-                skip: data.skip,
-                limit: data.limit
-            },
-            errors: {
-                422: 'Validation Error'
-            }
-        });
-    }
-    
-    /**
-     * Create Item
-     * Create new item.
-     * @param data The data for the request.
-     * @param data.requestBody
-     * @returns ItemPublic Successful Response
-     * @throws ApiError
-     */
-    public static createItem(data: ItemsCreateItemData): CancelablePromise<ItemsCreateItemResponse> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/api/v1/items/',
-            body: data.requestBody,
-            mediaType: 'application/json',
-            errors: {
-                422: 'Validation Error'
-            }
-        });
-    }
-    
-    /**
-     * Read Item
-     * Get item by ID.
-     * @param data The data for the request.
-     * @param data.id
-     * @returns ItemPublic Successful Response
-     * @throws ApiError
-     */
-    public static readItem(data: ItemsReadItemData): CancelablePromise<ItemsReadItemResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/items/{id}',
-            path: {
-                id: data.id
-            },
-            errors: {
-                422: 'Validation Error'
-            }
-        });
-    }
-    
-    /**
-     * Update Item
-     * Update an item.
-     * @param data The data for the request.
-     * @param data.id
-     * @param data.requestBody
-     * @returns ItemPublic Successful Response
-     * @throws ApiError
-     */
-    public static updateItem(data: ItemsUpdateItemData): CancelablePromise<ItemsUpdateItemResponse> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/api/v1/items/{id}',
-            path: {
-                id: data.id
-            },
-            body: data.requestBody,
-            mediaType: 'application/json',
-            errors: {
-                422: 'Validation Error'
-            }
-        });
-    }
-    
-    /**
-     * Delete Item
-     * Delete an item.
-     * @param data The data for the request.
-     * @param data.id
-     * @returns Message Successful Response
-     * @throws ApiError
-     */
-    public static deleteItem(data: ItemsDeleteItemData): CancelablePromise<ItemsDeleteItemResponse> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/api/v1/items/{id}',
-            path: {
-                id: data.id
-            },
-            errors: {
-                422: 'Validation Error'
-            }
-        });
-    }
-}
+import type { LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MedecinsReadMyProfilResponse, MedecinsCreateMyProfilData, MedecinsCreateMyProfilResponse, MedecinsUpdateMyProfilData, MedecinsUpdateMyProfilResponse, MedecinsUploadAssetData, MedecinsUploadAssetResponse, MedecinsListMyAssetsData, MedecinsListMyAssetsResponse, OrdonnancesReadOrdonnancesData, OrdonnancesReadOrdonnancesResponse, OrdonnancesCreateOrdonnanceData, OrdonnancesCreateOrdonnanceResponse, OrdonnancesReadOrdonnanceData, OrdonnancesReadOrdonnanceResponse, OrdonnancesGenerateOrdonnanceData, OrdonnancesGenerateOrdonnanceResponse, PatientsReadMyPatientProfilResponse, PatientsCreateMyPatientProfilData, PatientsCreateMyPatientProfilResponse, PatientsCreateGhostPatientProfilData, PatientsCreateGhostPatientProfilResponse, PatientsSearchPatientsData, PatientsSearchPatientsResponse, PrivateCreateUserData, PrivateCreateUserResponse, TemplatesListMyTemplatesResponse, TemplatesUploadTemplateData, TemplatesUploadTemplateResponse, TemplatesDeleteTemplateData, TemplatesDeleteTemplateResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class LoginService {
     /**
@@ -213,6 +102,266 @@ export class LoginService {
     }
 }
 
+export class MedecinsService {
+    /**
+     * Read My Profil
+     * Récupérer le profil médecin de l'utilisateur connecté.
+     * @returns ProfilMedecinPublic Successful Response
+     * @throws ApiError
+     */
+    public static readMyProfil(): CancelablePromise<MedecinsReadMyProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/medecins/me'
+        });
+    }
+    
+    /**
+     * Create My Profil
+     * Créer le profil médecin pour l'utilisateur connecté.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ProfilMedecinPublic Successful Response
+     * @throws ApiError
+     */
+    public static createMyProfil(data: MedecinsCreateMyProfilData): CancelablePromise<MedecinsCreateMyProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/medecins/me',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update My Profil
+     * Mettre à jour le profil médecin de l'utilisateur connecté.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ProfilMedecinPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateMyProfil(data: MedecinsUpdateMyProfilData): CancelablePromise<MedecinsUpdateMyProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/medecins/me',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Upload Asset
+     * Uploader une image de signature ou de cachet pour le médecin connecté.
+     * @param data The data for the request.
+     * @param data.formData
+     * @returns AssetMedecinPublic Successful Response
+     * @throws ApiError
+     */
+    public static uploadAsset(data: MedecinsUploadAssetData): CancelablePromise<MedecinsUploadAssetResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/medecins/me/assets',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List My Assets
+     * Lister les signatures et cachets récents uploadés par le médecin connecté.
+     * @param data The data for the request.
+     * @param data.typeAsset
+     * @returns AssetMedecinPublic Successful Response
+     * @throws ApiError
+     */
+    public static listMyAssets(data: MedecinsListMyAssetsData = {}): CancelablePromise<MedecinsListMyAssetsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/medecins/me/assets',
+            query: {
+                type_asset: data.typeAsset
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class OrdonnancesService {
+    /**
+     * Read Ordonnances
+     * Récupérer les ordonnances du médecin connecté (ou toutes si superuser).
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns OrdonnancesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readOrdonnances(data: OrdonnancesReadOrdonnancesData = {}): CancelablePromise<OrdonnancesReadOrdonnancesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/ordonnances/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Ordonnance
+     * Créer une nouvelle ordonnance.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns OrdonnancePublic Successful Response
+     * @throws ApiError
+     */
+    public static createOrdonnance(data: OrdonnancesCreateOrdonnanceData): CancelablePromise<OrdonnancesCreateOrdonnanceResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/ordonnances/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Ordonnance
+     * Récupérer une ordonnance par son ID.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns OrdonnancePublic Successful Response
+     * @throws ApiError
+     */
+    public static readOrdonnance(data: OrdonnancesReadOrdonnanceData): CancelablePromise<OrdonnancesReadOrdonnanceResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/ordonnances/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Generate Ordonnance
+     * Génère un PDF à partir de contenu HTML, remplace les tokens, le sauvegarde et crée l'ordonnance.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns OrdonnancePublic Successful Response
+     * @throws ApiError
+     */
+    public static generateOrdonnance(data: OrdonnancesGenerateOrdonnanceData): CancelablePromise<OrdonnancesGenerateOrdonnanceResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/ordonnances/generate',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class PatientsService {
+    /**
+     * Read My Patient Profil
+     * Récupérer le profil patient de l'utilisateur connecté.
+     * @returns ProfilPatientPublic Successful Response
+     * @throws ApiError
+     */
+    public static readMyPatientProfil(): CancelablePromise<PatientsReadMyPatientProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/patients/me'
+        });
+    }
+    
+    /**
+     * Create My Patient Profil
+     * Créer le profil patient pour l'utilisateur connecté.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ProfilPatientPublic Successful Response
+     * @throws ApiError
+     */
+    public static createMyPatientProfil(data: PatientsCreateMyPatientProfilData): CancelablePromise<PatientsCreateMyPatientProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/patients/me',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Ghost Patient Profil
+     * Créer un profil patient 'fantôme' (non encore inscrit) par un médecin pour une consultation.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ProfilPatientPublic Successful Response
+     * @throws ApiError
+     */
+    public static createGhostPatientProfil(data: PatientsCreateGhostPatientProfilData): CancelablePromise<PatientsCreateGhostPatientProfilResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/patients/fantome',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Search Patients
+     * Lister ou rechercher des patients (réservé exclusivement aux médecins authentifiés).
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns ProfilPatientPublic Successful Response
+     * @throws ApiError
+     */
+    public static searchPatients(data: PatientsSearchPatientsData = {}): CancelablePromise<PatientsSearchPatientsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/patients/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
 export class PrivateService {
     /**
      * Create User
@@ -228,6 +377,62 @@ export class PrivateService {
             url: '/api/v1/private/users/',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class TemplatesService {
+    /**
+     * List My Templates
+     * Lister tous les modèles d'ordonnances (.docx) enregistrés par le médecin connecté.
+     * @returns OrdonnanceTemplatePublic Successful Response
+     * @throws ApiError
+     */
+    public static listMyTemplates(): CancelablePromise<TemplatesListMyTemplatesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/templates/'
+        });
+    }
+    
+    /**
+     * Upload Template
+     * Uploader un fichier modèle .docx et détecter automatiquement les tokens ($patient$, $signature:img$, etc.)
+     * @param data The data for the request.
+     * @param data.formData
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static uploadTemplate(data: TemplatesUploadTemplateData): CancelablePromise<TemplatesUploadTemplateResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/templates/upload',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Template
+     * Supprimer un modèle d'ordonnance.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static deleteTemplate(data: TemplatesDeleteTemplateData): CancelablePromise<TemplatesDeleteTemplateResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/templates/{id}',
+            path: {
+                id: data.id
+            },
             errors: {
                 422: 'Validation Error'
             }
