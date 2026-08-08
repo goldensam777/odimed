@@ -28,6 +28,9 @@ function NouvelleOrdonnance() {
   const [paperSize, setPaperSize] = useState<"A4" | "A5">("A4")
   const [htmlContent, setHtmlContent] = useState("")
 
+  // Récupérer le brouillon au chargement
+  const [initialDraft] = useState(() => localStorage.getItem("odimed_draft_ordonnance") || undefined)
+
   const generateMutation = useMutation({
     mutationFn: (data: OrdonnanceGenerateRequest) =>
       OrdonnancesService.generateOrdonnance({ requestBody: data }),
@@ -48,6 +51,9 @@ function NouvelleOrdonnance() {
         const blob = await response.blob()
         const url = window.URL.createObjectURL(blob)
         window.open(url, "_blank")
+        
+        // Vider le brouillon après génération réussie (optionnel, mais propre)
+        // localStorage.removeItem("odimed_draft_ordonnance")
       } catch (err) {
         toast.error("Erreur lors de l'ouverture du PDF")
         console.error(err)
@@ -58,6 +64,17 @@ function NouvelleOrdonnance() {
       console.error(err)
     },
   })
+
+  const handleEditorChange = (html: string) => {
+    setHtmlContent(html)
+    // Sauvegarde automatique en session
+    localStorage.setItem("odimed_draft_ordonnance", html)
+  }
+
+  const handleSaveDraft = () => {
+    localStorage.setItem("odimed_draft_ordonnance", htmlContent)
+    toast.success("Brouillon sauvegardé ! Vous pouvez fermer la page en toute sécurité.")
+  }
 
   const handleGenerate = () => {
     generateMutation.mutate({
@@ -70,7 +87,11 @@ function NouvelleOrdonnance() {
     <div className="flex flex-col md:flex-row h-full overflow-hidden relative">
       {/* Editor Workspace Area (The Desk) */}
       <div className="flex-1 bg-zinc-950/50 dark:bg-black/20 overflow-y-auto no-scrollbar p-0 md:p-8 lg:p-12">
-        <PaperEditor paperSize={paperSize} onChange={setHtmlContent} />
+        <PaperEditor 
+          paperSize={paperSize} 
+          initialContent={initialDraft}
+          onChange={handleEditorChange} 
+        />
       </div>
 
       {/* Right Side Panel for Actions (The 'deuxième barre' moved to the side) */}
@@ -124,6 +145,7 @@ function NouvelleOrdonnance() {
           <Button
             variant="outline"
             className="w-full gap-2 h-11 rounded-xl hover:bg-muted/50 transition-colors"
+            onClick={handleSaveDraft}
           >
             <Save className="h-4 w-4 text-muted-foreground" /> Sauvegarder
             brouillon
