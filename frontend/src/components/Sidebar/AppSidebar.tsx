@@ -1,6 +1,4 @@
-import { FileText, Home, Users, FileSignature } from "lucide-react"
-
-import { SidebarAppearance } from "@/components/Common/Appearance"
+import { Database, FileSignature, FileText, Home, Users } from "lucide-react"
 import { Logo } from "@/components/Common/Logo"
 import {
   Sidebar,
@@ -11,8 +9,6 @@ import {
 import useAuth from "@/hooks/useAuth"
 import { type Item, Main } from "./Main"
 import { User } from "./User"
-
-import { Database } from "lucide-react"
 
 const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },

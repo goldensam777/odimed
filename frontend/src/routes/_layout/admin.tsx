@@ -1,15 +1,14 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { Suspense } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Database, Users as UsersIcon } from "lucide-react"
-
+import { Suspense } from "react"
 import { type UserPublic, UsersService } from "@/client"
 import AddUser from "@/components/Admin/AddUser"
-import { DatabaseManager } from "@/components/Admin/DatabaseManager"
 import { columns, type UserTableData } from "@/components/Admin/columns"
+import { DatabaseManager } from "@/components/Admin/DatabaseManager"
 import { DataTable } from "@/components/Common/DataTable"
 import PendingUsers from "@/components/Pending/PendingUsers"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
 
 function getUsersQueryOptions() {
@@ -63,9 +62,7 @@ function Admin() {
     <div className="flex flex-col gap-6 p-4 md:p-8 w-full max-w-6xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Administration</h1>
-        <p className="text-muted-foreground mt-1">
-          Gérez la plateforme Odimed
-        </p>
+        <p className="text-muted-foreground mt-1">Gérez la plateforme Odimed</p>
       </div>
 
       <Tabs defaultValue="users" className="w-full">
@@ -79,14 +76,14 @@ function Admin() {
             Base de données (Médicaments)
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="users" className="space-y-6">
           <div className="flex justify-end">
-             <AddUser />
+            <AddUser />
           </div>
           <UsersTable />
         </TabsContent>
-        
+
         <TabsContent value="database">
           <DatabaseManager isAdmin={true} />
         </TabsContent>

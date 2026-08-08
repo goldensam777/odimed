@@ -1,18 +1,25 @@
 import { Link as RouterLink } from "@tanstack/react-router"
-import { ChevronsUpDown, LogOut, Settings, Monitor, Moon, Sun } from "lucide-react"
-
+import {
+  ChevronsUpDown,
+  LogOut,
+  Monitor,
+  Moon,
+  Settings,
+  Sun,
+} from "lucide-react"
+import { useTheme } from "@/components/theme-provider"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
@@ -22,7 +29,6 @@ import {
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { getInitials } from "@/utils"
-import { useTheme } from "@/components/theme-provider"
 
 interface UserInfoProps {
   fullName?: string

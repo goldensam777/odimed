@@ -106,7 +106,6 @@ function SignUp() {
           </div>
 
           <div className="grid gap-4">
-            
             <FormField
               control={form.control}
               name="type_utilisateur"
@@ -182,7 +181,7 @@ function SignUp() {
                 </FormItem>
               )}
             />
-            
+
             {/* Conditional Fields for Médecin */}
             {selectedRole === "medecin" && (
               <div className="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-border">
@@ -227,7 +226,7 @@ function SignUp() {
                 />
               </div>
             )}
-            
+
             {/* Conditional Fields for Pharmacien */}
             {selectedRole === "pharmacien" && (
               <div className="bg-muted/30 p-4 rounded-xl border border-border">
