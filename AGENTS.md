@@ -29,3 +29,23 @@ Ce fichier retrace les grandes étapes de développement et de refactoring réal
 
 ### 6. Tests et Qualité
 - Couverture de test atteinte à **100%** sur les modules métiers principaux (52/52 tests passant avec succès via `uv run pytest`).
+
+## Phase 2 : Éditeur Avancé, UI et Moteur de Génération PDF
+
+### 1. Éditeur d'Ordonnances (TipTap)
+- Intégration avancée de l'éditeur WYSIWYG TipTap.
+- Implémentation du redimensionnement d'images via `tiptap-extension-resize-image`.
+- Création d'un algorithme in-browser (Canvas API) pour **détourer automatiquement les images** (rendre le fond blanc transparent) lors de l'upload des signatures et cachets.
+- Ajout de la **sauvegarde automatique de session (brouillon)** via `localStorage` pour prévenir la perte de données lors d'un rafraîchissement.
+
+### 2. Moteur de rendu PDF et Tokens Dynamiques
+- Création d'un moteur de génération de PDF (`app/core/pdf.py`) basé sur **WeasyPrint** pour convertir le HTML de l'éditeur en fichier PDF imprimable.
+- Création d'un **moteur de rendu de tokens par expressions régulières (Regex)** :
+  - Support des variables textuelles dynamiques (ex: `$patient_nom$`, `$date_jour$`).
+  - Support de l'injection d'images dynamiques (ex: `$signature:img$`) directement depuis le stockage des assets du médecin, converties à la volée en base64 pour le rendu PDF.
+- Création du endpoint API sécurisé pour télécharger et visualiser le PDF généré via Blob URL.
+
+### 3. Refonte UI/UX (Frontend)
+- Nettoyage du layout global et centralisation des composants.
+- Intégration du bouton "Appearance" (Dark mode) directement dans le menu utilisateur.
+- Remplacement du script de lancement par une solution cross-platform (`npx concurrently`) pour garantir la compatibilité Windows/Mac/Linux.
