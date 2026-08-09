@@ -31,9 +31,7 @@ const formSchema = z
     confirm_password: z
       .string()
       .min(1, { message: "La confirmation est requise" }),
-    type_utilisateur: z.enum(["medecin", "patient", "pharmacien"], {
-      required_error: "Veuillez sélectionner un type de profil",
-    }),
+    type_utilisateur: z.enum(["medecin", "patient", "pharmacien"] as const),
     numero_ordre: z.string().optional(),
     specialite: z.string().optional(),
     pays_exercice: z.string().optional(),

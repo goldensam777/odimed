@@ -14,7 +14,7 @@ import { type OrdonnanceGenerateRequest, OrdonnancesService } from "@/client"
 import { PaperEditor } from "@/components/Editor/PaperEditor"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import useAuth from "@/hooks/useAuth"
+// useAuth removed: not needed in this route
 
 export const Route = createFileRoute("/_layout/ordonnances")({
   component: NouvelleOrdonnance,
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_layout/ordonnances")({
 })
 
 function NouvelleOrdonnance() {
-  const { user } = useAuth()
+  // user from auth is not used currently
   const [paperSize, setPaperSize] = useState<"A4" | "A5">("A4")
   const [htmlContent, setHtmlContent] = useState("")
 
@@ -80,6 +80,9 @@ function NouvelleOrdonnance() {
     generateMutation.mutate({
       html_content: htmlContent,
       paper_size: paperSize,
+      // required by API contract; provide placeholder values if none selected
+      patient_id: "",
+      template_id: "",
     })
   }
 

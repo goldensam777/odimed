@@ -3,7 +3,7 @@
 # S'assure qu'on est à la racine du projet
 cd "$(dirname "$0")"
 
-echo "🚀 Lancement de l'écosystème Odimed (Mode Universel)..."
+echo "Launching Odimed..."
 
 # Utilise 'npx concurrently' pour lancer les deux processus dans le même terminal
 # avec des couleurs différentes pour bien distinguer les logs.
